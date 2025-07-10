@@ -24,3 +24,8 @@ coverage/*
 temp
 docs/gitbook/api
 package-lock.json
+
+.direnv
+flake.nix
+flake.lock
+.envrc
