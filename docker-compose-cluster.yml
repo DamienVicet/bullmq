@@ -1,0 +1,95 @@
+services:
+  redis-1:
+    image: redis:7-alpine
+    command: redis-server /redis.conf
+    ports:
+      - 7001:7001
+      - 17001:17001
+    volumes:
+      - ./redis1.conf:/redis.conf
+      - redis-data-1:/data/
+    networks:
+      redis-network:
+        ipv4_address: 172.28.0.1
+
+  redis-2:
+    image: redis:7-alpine
+    command: redis-server /redis.conf
+    ports:
+      - 7002:7002
+      - 17002:17002
+    volumes:
+      - ./redis2.conf:/redis.conf
+      - redis-data-2:/data/
+    networks:
+      redis-network:
+        ipv4_address: 172.28.0.2
+
+  redis-3:
+    image: redis:7-alpine
+    command: redis-server /redis.conf
+    ports:
+      - 7003:7003
+      - 17003:17003
+    volumes:
+      - ./redis3.conf:/redis.conf
+      - redis-data-3:/data/
+    networks:
+      redis-network:
+        ipv4_address: 172.28.0.3
+
+  redis-4:
+    image: redis:7-alpine
+    command: redis-server /redis.conf
+    ports:
+      - 7004:7004
+      - 17004:17004
+    volumes:
+      - ./redis4.conf:/redis.conf
+      - redis-data-4:/data/
+    networks:
+      redis-network:
+        ipv4_address: 172.28.0.4
+
+  redis-5:
+    image: redis:7-alpine
+    command: redis-server /redis.conf
+    ports:
+      - 7005:7005
+      - 17005:17005
+    volumes:
+      - ./redis5.conf:/redis.conf
+      - redis-data-5:/data/
+    networks:
+      redis-network:
+        ipv4_address: 172.28.0.5
+
+  redis-6:
+    image: redis:7-alpine
+    command: redis-server /redis.conf
+    ports:
+      - 7006:7006
+      - 17006:17006
+    volumes:
+      - ./redis6.conf:/redis.conf
+      - redis-data-6:/data/
+    networks:
+      redis-network:
+        ipv4_address: 172.28.0.6
+
+volumes:
+  redis-data-1:
+  redis-data-2:
+  redis-data-3:
+  redis-data-4:
+  redis-data-5:
+  redis-data-6:
+
+networks:
+  redis-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/24
+          ip_range: 172.28.0.0/24
+          gateway: 172.28.0.254

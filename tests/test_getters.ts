@@ -6,20 +6,31 @@ import { after } from 'lodash';
 import { describe, beforeEach, it, before, after as afterAll } from 'mocha';
 import * as sinon from 'sinon';
 
-import { default as IORedis } from 'ioredis';
+import { Cluster, default as IORedis } from 'ioredis';
 import { v4 } from 'uuid';
 import { FlowProducer, Queue, QueueEvents, Worker } from '../src/classes';
 import { delay, removeAllQueueData } from '../src/utils';
 
 describe('Jobs getters', function () {
   const redisHost = process.env.REDIS_HOST || 'localhost';
-  const prefix = process.env.BULLMQ_TEST_PREFIX || 'bull';
+  // const prefix = process.env.BULLMQ_TEST_PREFIX || 'bull';
+  const prefix = '{cluster}';
   let queue: Queue;
   let queueName: string;
 
   let connection;
   before(async function () {
-    connection = new IORedis(redisHost, { maxRetriesPerRequest: null });
+    connection = new Cluster(
+      [
+        {
+          host: '172.28.0.1',
+          port: 7001,
+        },
+      ],
+      {
+        redisOptions: { maxRetriesPerRequest: null },
+      },
+    );
   });
 
   beforeEach(async function () {
@@ -29,7 +40,7 @@ describe('Jobs getters', function () {
 
   afterEach(async function () {
     await queue.close();
-    await removeAllQueueData(new IORedis(redisHost), queueName);
+    await removeAllQueueData(connection, queueName, prefix);
   });
 
   afterAll(async function () {
@@ -175,17 +186,13 @@ describe('Jobs getters', function () {
       await queue2.close();
       await worker.close();
       await worker2.close();
-      await removeAllQueueData(new IORedis(redisHost), queueName2);
+      await removeAllQueueData(connection, queueName2, prefix);
     });
 
     describe('when sharing connection', () => {
       // Test is very flaky on CI, so we skip it for now.
       it('gets all workers for a given queue', async function () {
-        const ioredisConnection = new IORedis({
-          host: redisHost,
-          maxRetriesPerRequest: null,
-        });
-
+        const ioredisConnection = connection;
         const worker = new Worker(queueName, async () => {}, {
           autorun: false,
           connection: ioredisConnection,
